@@ -1,1 +1,1 @@
-# cogniquant
+# QuantiQuail
