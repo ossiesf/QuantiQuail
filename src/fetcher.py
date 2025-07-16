@@ -11,6 +11,8 @@ class Fetcher:
         print(f"Fetching data for {self.ticker}...")
         self.data = yf.Ticker(self.ticker).history(period=self.period)
         print(f"Data for {self.ticker} fetched successfully.")
+        print(f"Data contains {self.data.isnull().sum().sum()} missing values.\n")
+        return self.data
 
     def save_to_csv(self, filename):
         if self.data is not None:
@@ -28,7 +30,8 @@ class Fetcher:
             scaler = StandardScaler()
             self.data[columns] = scaler.fit_transform(self.data[columns])
             self.data[columns] = self.data[columns].round(2)  # Round to 2 decimal places
-            print(f"Data for {self.ticker} normalized successfully.")
+            print(f"Data for {self.ticker} normalized successfully. Returning cleaned data.")
+            return self.clean_data(self.data)
         else:
             print("No data to normalize. Please fetch data first.")
             
@@ -62,3 +65,11 @@ class Fetcher:
                     print("Data checked successfully.")
         else:
             print("No data available. Please fetch data first.")
+            
+    def clean_data(self, data):
+        if data is not None:
+            # Clean the data
+            import numpy as np
+            data = data.replace([np.inf, -np.inf], np.nan)
+            data = data.dropna().reset_index(drop=True)
+            return data
