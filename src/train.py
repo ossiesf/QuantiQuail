@@ -57,6 +57,16 @@ class Train:
     def predict(self, model, X_test):
         if model is not None and X_test is not None:
             predictions = model.predict(X_test)
+            importances = model.feature_importances_
+
+            # Quick output of feature importances to avoid adding noise
+            import pandas as pd
+            feature_importance_df = pd.DataFrame({
+                'feature': X_test.columns,
+                'importance': importances
+            }).sort_values(by='importance', ascending=False)
+
+            print("Feature importances:\n", feature_importance_df)
             print("Predictions made successfully.")
             return predictions
         else:

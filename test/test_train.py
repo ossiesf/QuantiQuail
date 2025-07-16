@@ -8,7 +8,7 @@ class TestTrain(unittest.TestCase):
     
     def setUp(self):
         # Fetch and normalize data
-        self.fetcher = Fetcher("SPY")
+        self.fetcher = Fetcher("SPY", period="20y")
         self.features = Features()
         self.fetcher.fetch_data()
         self.data = self.fetcher.normalize_data()

@@ -28,8 +28,24 @@ class Features:
         rsi = 100 - (100 / (1 + rs))
         data['RSI'] = rsi.round(2)
         data = data.iloc[period:].reset_index(drop=True)  # Drop the first 'period' NaN values
-        print("Relative Strength Index feature added.")
         return data
+    
+    def find_rsi_period(self, data, max_period=30):
+        # Find the best RSI period based on correlation with daily returns
+        
+        # Requires we have the 'Daily Returns' column already calculated
+        if 'Daily Returns' not in data.columns:
+            raise ValueError("Daily Returns must be calculated before finding RSI period.")
+        
+        correlations = {}
+        for period in range(2, max_period + 1):
+            rsi = self.relative_strength_index(data.copy(), period)['RSI']
+            correlation = data['Daily Returns'].corr(rsi)
+            correlations[period] = correlation
+            
+        best_period = max(correlations, key=correlations.get)
+        print(f"Best RSI period found: {best_period} with correlation {correlations[best_period]:.4f}")
+        return best_period
     
     # Moving averages TODO
 
