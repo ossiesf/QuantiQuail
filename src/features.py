@@ -13,10 +13,24 @@ class Features:
         data['Label'] = -1 # Default label for insignificant returns
         data.loc[next_returns > threshold, 'Label'] = 1
         data.loc[next_returns < -threshold, 'Label'] = 0
-        data = data[data['Label'] != -1].reset_index(drop=True)
+        data = data[data['Label'] != -1].dropna().reset_index(drop=True)
         print(f"Daily returns feature added with {data['Label'].value_counts().to_dict()}")
         return data
         
+    # Relative Strength Index TODO
+    def relative_strength_index(self, data, period=14):
+        data = data.copy()
+        delta = data['Close'].diff()
+        gain = (delta.where(delta > 0, 0)).rolling(window=period).mean()
+        loss = (-delta.where(delta < 0, 0)).rolling(window=period).mean()
+        
+        rs = gain / loss
+        rsi = 100 - (100 / (1 + rs))
+        data['RSI'] = rsi.round(2)
+        data = data.iloc[period:].reset_index(drop=True)  # Drop the first 'period' NaN values
+        print("Relative Strength Index feature added.")
+        return data
+    
     # Moving averages TODO
 
-    # RSI TODO
+    # Bollinger Bands TODO

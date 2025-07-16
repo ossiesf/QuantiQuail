@@ -7,6 +7,7 @@ class Train:
         self.features = Features()
         self.label = label
         self.data = self.features.daily_returns(data) if data is not None else None
+        self.data = self.features.relative_strength_index(self.data) if self.data is not None else None
 
     def train_test_split(self):
         if self.data is not None:

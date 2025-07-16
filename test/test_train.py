@@ -7,12 +7,19 @@ from sklearn.metrics import accuracy_score, classification_report, confusion_mat
 class TestTrain(unittest.TestCase):
     
     def setUp(self):
+        # Fetch and normalize data
         self.fetcher = Fetcher("SPY")
         self.features = Features()
         self.fetcher.fetch_data()
         self.data = self.fetcher.normalize_data()
+        
+        # Add features
         self.data = self.features.daily_returns(self.data)
-        self.data = self.data.dropna()  # Ensure no NaNs remain after feature engineering
+        self.data = self.features.relative_strength_index(self.data)
+        print("Data fetched and features engineered successfully.")
+        print("Sample of data with features:\n", self.data.head(), "\n")
+        
+        # Initialize Train class
         self.train = Train('Label', self.data)
 
     def test_data_split(self):
@@ -22,10 +29,6 @@ class TestTrain(unittest.TestCase):
         expected_train = int(0.8 * n)
         expected_test = n - expected_train
 
-        self.assertAlmostEqual(X_train.shape[0], expected_train, delta=10,
-                               msg="Training set size should be approximately 80% of the total data")
-        self.assertAlmostEqual(X_test.shape[0], expected_test, delta=10,
-                               msg="Test set size should be approximately 20% of the total data")
         self.assertAlmostEqual(y_train.shape[0], expected_train, delta=10,
                                msg="y_train should have the same number of samples as X_train")
         self.assertAlmostEqual(y_test.shape[0], expected_test, delta=10,

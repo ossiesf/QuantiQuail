@@ -21,3 +21,10 @@ class TestFeatures(unittest.TestCase):
                          "Daily returns should not NaN values")
         self.assertEqual(self.data['Label'].isnull().sum(), 0, 
                          "Labels should not NaN values")
+        
+    def test_relative_strength_index(self):
+        self.data = self.features.relative_strength_index(self.data)
+        print("Sample of data with RSI feature:\n", self.data[:15], "\n")
+        
+        self.assertIn('RSI', self.data.columns, "RSI column should exist")
+        self.assertEqual(self.data['RSI'].isnull().sum(), 0, "RSI should not have NaN values")
